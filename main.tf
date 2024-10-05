@@ -24,10 +24,28 @@ resource "aws_vpc" "custom_vpc" {
 }
 
 resource "aws_subnet" "custom_subnet" {
-  vpc_id     = aws_vpc.custom_vpc.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.custom_vpc.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
   tags = {
     Name = "Custom Subnet"
+  }
+}
+
+resource "aws_subnet" "custom_subnet2" {
+  vpc_id            = aws_vpc.custom_vpc.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+  tags = {
+    Name = "Custom Subnet 2"
+  }
+}
+
+resource "aws_db_subnet_group" "custom_db_subnet_group" {
+  name       = "custom_db_subnet_group"
+  subnet_ids = [aws_subnet.custom_subnet.id, aws_subnet.custom_subnet2.id]
+  tags = {
+    Name = "Custom DB Subnet Group"
   }
 }
 
@@ -107,7 +125,9 @@ resource "aws_instance" "MyEC2Instance" {
   associate_public_ip_address = true
   security_groups             = [aws_security_group.custom_security_group.id]
   tags = {
-    Name = "MyEC2Instance"
+    Name        = "test-ec2"
+    Description = "Test instance"
+    CostCenter  = "12345"
   }
 
   user_data = <<-EOF
@@ -115,4 +135,73 @@ resource "aws_instance" "MyEC2Instance" {
               sudo apt-get update
               sudo apt-get install -y postgresql-client
               EOF
+}
+
+resource "aws_db_parameter_group" "custom_db_parameter_group" {
+  name   = "custom-db-parameter-group"
+  family = "postgres14"
+
+  parameter {
+    name  = "log_connections"
+    value = "1"
+  }
+}
+
+resource "aws_security_group" "custom_security_group_rds" {
+  name   = "rds_security_group"
+  vpc_id = aws_vpc.custom_vpc.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "RDS Security Group"
+  }
+}
+
+resource "aws_db_instance" "custom_db_instance" {
+  identifier             = "custom-db"
+  instance_class         = "db.t3.micro"
+  allocated_storage      = 5
+  engine                 = "postgres"
+  engine_version         = "14.10"
+  name                   = "customdb"
+  username               = "cUser"
+  password               = var.db_password
+  db_subnet_group_name   = aws_db_subnet_group.custom_db_subnet_group.name
+  vpc_security_group_ids = [aws_security_group.custom_security_group_rds.id]
+  parameter_group_name   = aws_db_parameter_group.custom_db_parameter_group.name
+  publicly_accessible    = true
+  skip_final_snapshot    = true
+}
+
+variable "db_password" {
+  type    = string
+  default = "Password123"
+}
+
+output "custom_db_instance_address" {
+  value       = aws_db_instance.custom_db_instance.address
+  description = "The address of the custom DB instance"
+}
+
+output "custom_db_instance_port" {
+  value       = aws_db_instance.custom_db_instance.port
+  description = "The port of the custom DB instance"
+}
+
+output "custom_db_instance_username" {
+  value       = aws_db_instance.custom_db_instance.username
+  description = "The username of the custom DB instance"
 }
