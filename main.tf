@@ -109,4 +109,10 @@ resource "aws_instance" "MyEC2Instance" {
   tags = {
     Name = "MyEC2Instance"
   }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update
+              sudo apt-get install -y postgresql-client
+              EOF
 }
