@@ -22,4 +22,5 @@ resource "aws_db_instance" "custom_db_instance" {
   parameter_group_name   = aws_db_parameter_group.custom_db_parameter_group.name
   publicly_accessible    = true
   skip_final_snapshot    = true
+  multi_az               = true
 }
