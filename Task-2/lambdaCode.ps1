@@ -4,4 +4,4 @@
 
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
 
-Publish-SNSMessage -TopicArn arn:aws:sns:us-east-1:225989340442:emailer -Message "Hello, World!"
+Publish-SNSMessage -TopicArn arn:aws:sns:us-east-1:225989340442:emailer -Message "This an email."

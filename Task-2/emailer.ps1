@@ -38,7 +38,12 @@ $snsPublishPolicy = @"
 }
 "@
 
-$snsPublishPolicyArn = (New-IAMPolicy -PolicyName "SNSPublishPolicy" -PolicyDocument $snsPublishPolicy -Region $region).Arn
+try{
+  $snsPublishPolicyArn = (New-IAMPolicy -PolicyName "SNSPublishPolicy" -PolicyDocument $snsPublishPolicy -Region $region).Arn
+} catch
+{
+  $snsPublishPolicyArn = (Get-IAMPolicyList -Region $region | Where-Object {$_.PolicyName -eq "SNSPublishPolicy"}).Arn
+}
 
 try
 {
