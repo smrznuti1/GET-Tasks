@@ -1,5 +1,7 @@
 #! /bin/bash
 
+
+
 regex="k[0-9a-f]{8}\.kod"
 
 while IFS= read -r line; do
@@ -8,8 +10,14 @@ while IFS= read -r line; do
 	if ! [[ $line =~ $regex ]]; then
 		echo "$line"
 	else
-		num=${line:7:1}
-		echo "$num in $line"
+		letterG="${line:7:1}"
+		letterE="${line:8:1}"
+		numG=$(printf "%d\n" "0x$letterG")
+
+		if (( numG % 2 == 0 )); then
+			mkdir -p "${letterG}0/${letterE}0"
+			mv "$line" "${letterG}0/${letterE}0"
+		fi
 	fi
 	
 
