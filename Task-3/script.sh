@@ -4,7 +4,8 @@
 
 regex="k[0-9a-f]{8}\.kod"
 
-while IFS= read -r line; do
+while IFS='' read -r line; do
+	line=$(echo "$line" | xargs)
 	touch "$line"
 
 	if ! [[ $line =~ $regex ]]; then
