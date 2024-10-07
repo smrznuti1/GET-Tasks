@@ -10,6 +10,7 @@ resource "aws_instance" "MyEC2Instance" {
   associate_public_ip_address = true
   security_groups             = [aws_security_group.custom_security_group.id]
   key_name                    = aws_key_pair.custom_key_pair.key_name
+  depends_on                  = [aws_db_instance.custom_db_instance]
   tags = {
     Name        = "test-ec2"
     Description = "Test instance"
