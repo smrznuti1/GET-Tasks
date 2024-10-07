@@ -27,4 +27,4 @@ while IFS='' read -r line; do
 	fi
 	
 
-done < ../prilog.txt
+done < ./prilog.txt
