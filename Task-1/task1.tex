@@ -17,6 +17,7 @@
 		\frametitle{Start of the Task}
 		\begin{itemize}
 		\item using 1 file for everything
+		\item splitting them at some point for easier management
 		\item required provider - aws
 		\item generate aws credentials
 		\item configuring aws provider
@@ -41,7 +42,30 @@
 				\item creation of Elastic IP
 				\item create route table and route for the public access
 			\end{itemize}
-			\item user_data for the PostreSQL client
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{EC2}
+		\begin{itemize}
+				\item user data for the PostreSQL client
+				\item security group setup for ssh access and http access
+				\item generation of authorized keys for exclusive access to the instance using ssh
+			
+		\end{itemize}
+		
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{RDS}
+		\begin{itemize}
+			\item creation of AWS DB instance
+			\item specifying the instance class 'db.t3.micro'
+			\item PostreSQL 14.10
+			\item requirement Multi-AZ -> new subnet in the different AZ
+			\item user hardcoded
+			\item password as variable for security reasons (even tho it is using default password)
+			\item security groups for the second subnet
 		\end{itemize}
 	\end{frame}
 	
