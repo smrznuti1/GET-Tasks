@@ -25,6 +25,21 @@ $rolePolicy = @"
 }
 "@
 
+$snsPublishPolicy = @"
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sns:Publish",
+      "Resource": "$snsTopicArn"
+    }
+  ]
+}
+"@
+
+$snsPublishPolicyArn = (New-IAMPolicy -PolicyName "SNSPublishPolicy" -PolicyDocument $snsPublishPolicy -Region $region).Arn
+
 try
 {
   New-IamRole -RoleName $lambdaIAMRoleName -AssumeRolePolicyDocument $rolePolicy -Region $region
@@ -36,9 +51,12 @@ try
 $roleArn = (Get-IAMRole -RoleName $lambdaIAMRoleName -Region $region).Arn
 Write-Host("IAM Role ARN: " + $roleArn)
 
-Write-Host("Attaching policy to role")
+Write-Host("Attaching policies")
 Register-IAMRolePolicy -RoleName $lambdaIAMRoleName -PolicyArn $policyARN -Region $region
-Write-Host("Policy attached to role")
+
+Register-IAMRolePolicy -RoleName $lambdaIAMRoleName -PolicyArn $snsPublishPolicyArn -Region $region
+
+Write-Host("Policies attached")
 
 $lambdaFunctionCode = @"
 `#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.671'}
@@ -47,7 +65,7 @@ $lambdaFunctionCode = @"
 
 Write-Host (ConvertTo-Json -InputObject `$LambdaInput -Compress -Depth 5)
 
-Publish-SNSMessage -TopicArn $snsTopicArn -Message "Hello, World!"
+Publish-SNSMessage -TopicArn $snsTopicArn -Message "This an email."
 "@
 
 try
@@ -60,13 +78,6 @@ try
 
 Publish-AWSPowerShellLambda -ScriptPath $scriptPath -Name $lambdaFunctionName -Region $region -IAMRoleArn $roleArn
 
-try
-{
-  #Add-LMPermission -FunctionName $lambdaFunctionName -StatementId "AllowSNSPublish" -Action "lambda:InvokeFunction" -Principal "sns.amazonaws.com" -SourceArn $snsTopicArn -Region $region
-} catch
-{
-  Write-Host("Permission already exists")
-}
 
 $ruleArn = Write-EVBRule -Name $mailTriggerRuleName -ScheduleExpression "cron(0 1 * * ? *)" -Region $region
 Write-Host("Rule ARN: " + $ruleArn)
