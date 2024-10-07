@@ -66,6 +66,16 @@
 			\item user hardcoded
 			\item password as variable for security reasons (even tho it is using default password)
 			\item security groups for the second subnet
+			\item allowing communication using psql using security groups
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{RDS and EC2}
+		\begin{itemize}
+			\item table creation from EC2 using user data
+			\item depends\_on to ensure the order because we use EC2 to create a table in the DB
+			\item Apache Web Server in user data as well
 		\end{itemize}
 	\end{frame}
 	
