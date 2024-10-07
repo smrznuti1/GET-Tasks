@@ -1,0 +1,62 @@
+\documentclass{beamer}
+\usetheme{Berlin}
+
+\setbeamercolor{structure}{fg=red}
+
+\title{Powershell For the Emailer}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+	\frametitle{Start of the Task}
+	\begin{itemize}
+		\item section for the needed data, progressively added throughout the process
+		\item using Powershell for the whole process
+		\item Powershell AWS module for creation and managing Services and roles
+	\end{itemize}
+\end{frame}
+	
+\begin{frame}
+	\frametitle{Simple Notification Service}
+	\begin{itemize}
+		\item data needed for the SNS topic
+		\item creation of the SNS topic
+		\item saving the arn of the topic
+		\item New-SNSTopic returns the arn even if the topic already exists
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Lambda Function}
+	\begin{itemize}
+		\item policy for the Role of the Lambda function
+		\item creation of the Role for the Lambda function
+		\item fetching role arn to add the policies to the role
+		\item adding preconfigured policies to the role
+		\item creation of the policy to grant access to the SNS topic publish action
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Lambda Function}
+	\begin{itemize}
+		\item for the policy, if it already exists, the arn is extracted from the list
+		\item creation of the Lambda Function Powershell code
+		\item writing the code to a file
+		\item creating the Lambda function based on the ps1 file created
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{EventBridge Rule}
+	\begin{itemize}
+		\item creation of the EventBridge rule
+		\item registering target for the EventBridge
+		\item adding permission to the function
+	\end{itemize}
+\end{frame}
+
+\end{document}
